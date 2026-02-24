@@ -13,13 +13,25 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 class PostView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
+        self.likes = 0
 
-        button = discord.ui.Button(
-            label="🔗 Abrir Instagram",
-            url="https://instagram.com/"
+    @discord.ui.button(label="❤️ 0", style=discord.ButtonStyle.secondary)
+    async def like(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.likes += 1
+        button.label = f"❤️ {self.likes}"
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label="💬 Comentar", style=discord.ButtonStyle.primary)
+    async def comment(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # cria thread baseada na mensagem
+        thread = await interaction.message.create_thread(
+            name="💬 Comentários"
         )
 
-        self.add_item(button)
+        await interaction.response.send_message(
+            "✅ Thread de comentários criada!",
+            ephemeral=True
+        )
 
 
 # ===== COMANDO =====
