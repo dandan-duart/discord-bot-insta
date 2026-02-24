@@ -14,9 +14,12 @@ class PostView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(label="🔗 Abrir Instagram", style=discord.ButtonStyle.link, url="https://instagram.com/")
-    async def instagram_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        pass
+        button = discord.ui.Button(
+            label="🔗 Abrir Instagram",
+            url="https://instagram.com/"
+        )
+
+        self.add_item(button)
 
 
 # ===== COMANDO =====
