@@ -58,6 +58,8 @@ class PostView(discord.ui.View):
 
 
 # ===== COMANDO =====
+CANAL_DESTINO_ID = 1475927162430292038  # coloque aqui o ID do canal B
+
 @bot.command()
 async def postar(ctx, titulo: str, *, descricao: str):
 
@@ -72,18 +74,24 @@ async def postar(ctx, titulo: str, *, descricao: str):
         icon_url=ctx.author.display_avatar.url
     )
 
-    # Se tiver imagem anexada
+    # Pega imagem anexada
     if ctx.message.attachments:
         imagem = ctx.message.attachments[0]
         embed.set_image(url=imagem.url)
 
     view = PostView()
-    await ctx.send(embed=embed, view=view)
 
-# ===== EVENTO READY =====
-@bot.event
-async def on_ready():
-    print(f"✅ Bot conectado como {bot.user}")
+    # 🔥 pega o canal B
+    canal_destino = bot.get_channel(CANAL_DESTINO_ID)
+
+    if canal_destino:
+        await canal_destino.send(embed=embed, view=view)
+
+    # Apaga mensagem do comando
+    try:
+        await ctx.message.delete()
+    except:
+        pass
 
 
 # ===== RAILWAY TOKEN =====
