@@ -87,11 +87,7 @@ async def postar(ctx, titulo: str, *, descricao: str):
     if canal_destino:
         await canal_destino.send(embed=embed, view=view)
 
-    # Apaga mensagem do comando
-    try:
-        await ctx.message.delete()
-    except:
-        pass
+    
 
 
 # ===== RAILWAY TOKEN =====
