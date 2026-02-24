@@ -1,12 +1,7 @@
-import os
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
-
-# Carrega variáveis do .env
-load_dotenv()
-
-TOKEN = os.getenv("TOKEN")
+from discord import app_commands
+import os
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -14,59 +9,23 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 
+# ===== VIEW DO BOTÃO =====
 class PostView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
-        self.likes = 0
-        self.users_who_liked = set()
 
-    @discord.ui.button(label="❤️ 0", style=discord.ButtonStyle.secondary)
-    async def like(self, interaction: discord.Interaction, button: discord.ui.Button):
-
-        if interaction.user.id in self.users_who_liked:
-            await interaction.response.send_message(
-                "Você já curtiu esse post!",
-                ephemeral=True
-            )
-            return
-
-        self.users_who_liked.add(interaction.user.id)
-        self.likes += 1
-        button.label = f"❤️ {self.likes}"
-
-        await interaction.response.edit_message(view=self)
-
-    @discord.ui.button(label="💬 Comentar", style=discord.ButtonStyle.primary)
-    async def comment(self, interaction: discord.Interaction, button: discord.ui.Button):
-
-        # Evita criar múltiplas threads
-        if interaction.message.thread:
-            await interaction.response.send_message(
-                "Já existe uma thread de comentários!",
-                ephemeral=True
-            )
-            return
-
-        thread = await interaction.message.create_thread(
-            name="💬 Comentários do post",
-            auto_archive_duration=60
-        )
-
-        await interaction.response.send_message(
-            f"Thread criada: {thread.mention}",
-            ephemeral=True
-        )
+    @discord.ui.button(label="🔗 Abrir Instagram", style=discord.ButtonStyle.link, url="https://instagram.com/")
+    async def instagram_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        pass
 
 
+# ===== COMANDO =====
 @bot.command()
-async def post(ctx, *, imagem_url: str = None):
-    """
-    !post URL_DA_IMAGEM
-    """
-
+async def postar(ctx, titulo: str, descricao: str, imagem_url: str = None):
     embed = discord.Embed(
-        description="📸 **Novo post!**",
-        color=discord.Color.dark_gray()
+        title=titulo,
+        description=descricao,
+        color=discord.Color.purple()
     )
 
     embed.set_author(
@@ -78,16 +37,24 @@ async def post(ctx, *, imagem_url: str = None):
         embed.set_image(url=imagem_url)
     else:
         embed.set_image(
-            url="https://i.imgur.com/Exemplo.jpg"  # coloque uma imagem padrão válida
+            url="https://i.imgur.com/Exemplo.jpg"  # coloque uma imagem válida depois
         )
 
     view = PostView()
     await ctx.send(embed=embed, view=view)
 
 
+# ===== EVENTO READY =====
 @bot.event
 async def on_ready():
     print(f"✅ Bot conectado como {bot.user}")
 
 
-bot.run(TOKEN)
+# ===== RAILWAY TOKEN =====
+if __name__ == "__main__":
+    TOKEN = os.getenv("TOKEN")
+
+    if not TOKEN:
+        raise ValueError("TOKEN não encontrada nas variáveis de ambiente!")
+
+    bot.run(TOKEN)
