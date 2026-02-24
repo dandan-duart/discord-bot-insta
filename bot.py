@@ -72,13 +72,16 @@ async def postar(ctx, titulo: str, *, descricao: str):
         icon_url=ctx.author.display_avatar.url
     )
 
-    # Se tiver imagem anexada
+    # Pega imagem anexada se tiver
     if ctx.message.attachments:
         imagem = ctx.message.attachments[0]
         embed.set_image(url=imagem.url)
 
     view = PostView()
     await ctx.send(embed=embed, view=view)
+
+    # 🔥 Apaga a mensagem do comando
+    await ctx.message.delete()
 
 # ===== EVENTO READY =====
 @bot.event
