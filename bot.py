@@ -35,32 +35,26 @@ class PostView(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     # ===== BOTÃO COMENTAR =====
-   @discord.ui.button(label="💬 Comentar", style=discord.ButtonStyle.primary)
-async def comment(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @discord.ui.button(label="💬 Comentar", style=discord.ButtonStyle.primary)
+    async def comment(self, interaction: discord.Interaction, button: discord.ui.Button):
 
-    # Se já existe thread
-    if self.thread:
+        # Se já existe thread, só manda o usuário pra ela
+        if self.thread:
+            await interaction.response.send_message(
+                f"💬 Comente aqui: {self.thread.mention}",
+                ephemeral=True
+            )
+            return
 
-        # Se estiver arquivada → reabre
-        if self.thread.archived:
-            await self.thread.edit(archived=False)
+        # Cria thread se ainda não existe
+        self.thread = await interaction.message.create_thread(
+            name="💬 Comentários"
+        )
 
         await interaction.response.send_message(
-            f"💬 Comente aqui: {self.thread.mention}",
+            f"✅ Thread criada: {self.thread.mention}",
             ephemeral=True
         )
-        return
-
-    # Se não existe → cria nova
-    self.thread = await interaction.message.create_thread(
-        name="💬 Comentários",
-        auto_archive_duration=60
-    )
-
-    await interaction.response.send_message(
-        f"✅ Thread criada: {self.thread.mention}",
-        ephemeral=True
-    )
 
 
 # ===== COMANDO =====
