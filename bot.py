@@ -59,7 +59,8 @@ class PostView(discord.ui.View):
 
 # ===== COMANDO =====
 @bot.command()
-async def postar(ctx, titulo: str, descricao: str, imagem_url: str = None):
+async def postar(ctx, titulo: str, *, descricao: str):
+
     embed = discord.Embed(
         title=titulo,
         description=descricao,
@@ -71,16 +72,13 @@ async def postar(ctx, titulo: str, descricao: str, imagem_url: str = None):
         icon_url=ctx.author.display_avatar.url
     )
 
-    if imagem_url:
-        embed.set_image(url=imagem_url)
-    else:
-        embed.set_image(
-            url="https://i.imgur.com/Exemplo.jpg"  # coloque uma imagem válida depois
-        )
+    # Se tiver imagem anexada
+    if ctx.message.attachments:
+        imagem = ctx.message.attachments[0]
+        embed.set_image(url=imagem.url)
 
     view = PostView()
     await ctx.send(embed=embed, view=view)
-
 
 # ===== EVENTO READY =====
 @bot.event
